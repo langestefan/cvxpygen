@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Dict, List
 
-import scipy.sparse as sp
 import numpy as np
+import scipy.sparse as sp
 
 
 @dataclass
@@ -14,6 +13,7 @@ class Configuration:
     gradient: bool
     gradient_two_stage: bool
     explicit: bool
+    cmake_args: list = field(default_factory=list)
 
 
 @dataclass
@@ -29,14 +29,15 @@ class AffineMap:
 @dataclass
 class ParameterCanon:
     """Represents first affine form"""
+
     p: dict = field(default_factory=dict)
-    p_csc: Dict[str, sp.csc_matrix] = field(default_factory=dict)
-    p_id_to_mapping: Dict[str, sp.csr_matrix] = field(default_factory=dict)  # Represents A slice to canonical parameter
-    p_id_to_changes: Dict[str, bool] = field(default_factory=dict)
-    p_id_to_size: Dict[str, int] = field(default_factory=dict)
+    p_csc: dict[str, sp.csc_matrix] = field(default_factory=dict)
+    p_id_to_mapping: dict[str, sp.csr_matrix] = field(default_factory=dict)  # Represents A slice to canonical parameter
+    p_id_to_changes: dict[str, bool] = field(default_factory=dict)
+    p_id_to_size: dict[str, int] = field(default_factory=dict)
     nonzero_d: bool = True
     is_maximization: bool = False
-    user_p_name_to_canon_outdated: Dict[str, List[str]] = field(default_factory=dict)
+    user_p_name_to_canon_outdated: dict[str, list[str]] = field(default_factory=dict)
     quad_obj: bool = True
     th_mask: np.ndarray = None
     n_param_reduced: int = 0
@@ -45,49 +46,51 @@ class ParameterCanon:
 
 @dataclass
 class ParameterInfo:
-    """
-    All info about a user defined parameter and how to convert from
+    """All info about a user defined parameter and how to convert from
     the user-defined parameter to the canonicalized vector that is
     passed to A.
     """
-    col_to_name_usp: Dict[int, str]  # usp: user-defined sparsity
+
+    col_to_name_usp: dict[int, str]  # usp: user-defined sparsity
     flat_usp: np.ndarray
-    id_to_col: Dict[int, int]  # Maps parameter id to column of the start of the parameter
-    ids: List[int]
-    name_to_shape: Dict[str, tuple]
-    name_to_size_usp: Dict[str, int]
-    name_to_sparsity: Dict[str, np.ndarray]
-    name_to_sparsity_type: Dict[str, str]
-    names: List[str]
+    id_to_col: dict[int, int]  # Maps parameter id to column of the start of the parameter
+    ids: list[int]
+    name_to_shape: dict[str, tuple]
+    name_to_size_usp: dict[str, int]
+    name_to_sparsity: dict[str, np.ndarray]
+    name_to_sparsity_type: dict[str, str]
+    names: list[str]
     num: int
     sparsity_mask: np.ndarray
-    writable: Dict[str, np.ndarray]
+    writable: dict[str, np.ndarray]
     lower: np.ndarray
     upper: np.ndarray
 
 
 @dataclass
 class VariableInfo:
-    name_to_offset: Dict[str, int]
-    name_to_indices: Dict[str, np.ndarray]
-    name_to_size: Dict[str, int]
-    sizes: List[int]
-    name_to_shape: Dict[str, tuple]
-    name_to_init: Dict[str, np.ndarray]
+    name_to_offset: dict[str, int]
+    name_to_indices: dict[str, np.ndarray]
+    name_to_size: dict[str, int]
+    sizes: list[int]
+    name_to_shape: dict[str, tuple]
+    name_to_init: dict[str, np.ndarray]
 
 
 @dataclass
 class PrimalVariableInfo(VariableInfo):
     """Info for primal variable retrival from a canonical solution"""
-    name_to_sym: Dict[str, bool]
-    sym: List[bool]
+
+    name_to_sym: dict[str, bool]
+    sym: list[bool]
     reduced: bool = False
 
 
 @dataclass
 class DualVariableInfo(VariableInfo):
     """Info for dual variable retrival from a canonical solution"""
-    name_to_vec: Dict[str, str]
+
+    name_to_vec: dict[str, str]
 
 
 @dataclass
@@ -112,9 +115,9 @@ class WorkspacePointerInfo:
 
 @dataclass
 class UpdatePendingLogic:
-    parameters_outdated: List[str]
+    parameters_outdated: list[str]
     operator: str = None
-    functions_if_false: List[str] = None
+    functions_if_false: list[str] = None
     extra_condition: str = None
     extra_condition_operator: str = None
 
@@ -127,9 +130,9 @@ class ParameterUpdateLogic:
 
 @dataclass
 class Canon:
+    """All info for the ASA representation
     """
-    All info for the ASA representation
-    """
+
     prim_variable_info: PrimalVariableInfo
     dual_variable_info: DualVariableInfo
     parameter_info: ParameterInfo
